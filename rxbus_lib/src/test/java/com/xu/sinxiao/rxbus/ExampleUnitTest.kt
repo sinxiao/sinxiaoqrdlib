@@ -1,4 +1,4 @@
-package com.xu.sinxiao.rxbus_lib
+package com.xu.sinxiao.rxbus
 
 import org.junit.Test
 

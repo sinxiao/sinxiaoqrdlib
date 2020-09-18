@@ -1,5 +1,7 @@
 package com.xu.sinxiao.sinxiaoqrdlib
 
+import ae.sinxiao.android.qrd.ScanQrdActivity
+import ae.sinxiao.android.qrd.model.QrdScanResult
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -16,8 +18,26 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+                .setAction("Action", null).show()
         }
+//        ScanQrdActivity.startScanQrdActivity(
+//            applicationContext,
+//            object : ScanQrdActivity.ScanListener {
+//
+//
+//                override fun onScanSucess(scanResult: QrdScanResult?) {
+//
+//                }
+//
+//                override fun onScanFail(msg: String?) {
+//
+//                }
+//
+//                override fun onScanCancled() {
+//
+//                }
+//
+//            })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -1,4 +1,4 @@
-package com.xu.sinxiao.rxbus_lib
+package com.xu.sinxiao.rxbus
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
