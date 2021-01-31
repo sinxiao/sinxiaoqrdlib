@@ -194,9 +194,9 @@ class ImageSelectorActivity : BaseActivity() {
                 if (position == 0) {
                     float_date_bar?.text = getString(R.string.all_images)
                     LoaderManager.getInstance(this).restartLoader(
-                            QUERY_ALL,
-                            null,
-                            mLoaderCallback
+                        QUERY_ALL,
+                        null,
+                        mLoaderCallback
                     )
                 } else {
                     val photo = adapterView.adapter.getItem(position) as PhotoVo
@@ -245,11 +245,11 @@ class ImageSelectorActivity : BaseActivity() {
                 var result = imgDate.substring(0, 7)
                 if (today.startsWith(result)) {
                     result =
-                            if (imgDate >= monday && imgDate <= sunday) {
-                                "This Week"
-                            } else {
-                                "This Month"
-                            }
+                        if (imgDate >= monday && imgDate <= sunday) {
+                            "This Week"
+                        } else {
+                            "This Month"
+                        }
                 }
 //                LogUtils.e(TAG, "图片日期：$imgDate, 显示结果：$result")
                 if (!TextUtils.isEmpty(result)) {
@@ -265,122 +265,126 @@ class ImageSelectorActivity : BaseActivity() {
      * 查询手机图片
      */
     private val mLoaderCallback: LoaderManager.LoaderCallbacks<Cursor> =
-            object : LoaderManager.LoaderCallbacks<Cursor> {
-                private val IMAGE_PROJECTION =
-                        arrayOf( // 图片ID
-                                MediaStore.Images.Media._ID,  // 图片路径
-                                MediaStore.Images.Media.DATA,  // 图片名称
-                                MediaStore.Images.Media.DISPLAY_NAME,  // 生成日期
-                                MediaStore.Images.Media.DATE_ADDED
+        object : LoaderManager.LoaderCallbacks<Cursor> {
+            private val IMAGE_PROJECTION =
+                arrayOf( // 图片ID
+                    MediaStore.Images.Media._ID,  // 图片路径
+                    MediaStore.Images.Media.DATA,  // 图片名称
+                    MediaStore.Images.Media.DISPLAY_NAME,  // 生成日期
+                    MediaStore.Images.Media.DATE_ADDED
+                )
+
+            override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
+                val cursorLoader: CursorLoader
+                // 备注：部分机型png图片无法正常显示（原因未知），必要时可以在此过滤掉
+                val where = (MediaStore.Images.Media.MIME_TYPE + "='image/jpeg' "
+                        + "or "
+                        + MediaStore.Images.Media.MIME_TYPE + "='image/png'")
+                when (id) {
+                    QUERY_ALL -> {
+//                            LogUtils.e(this, "--查询图片->所有--")
+                        cursorLoader = CursorLoader(
+                            this@ImageSelectorActivity,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            IMAGE_PROJECTION,
+                            where,
+                            null, IMAGE_PROJECTION[3] + " DESC"
                         )
-
-                override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
-                    val cursorLoader: CursorLoader
-                    // 备注：部分机型png图片无法正常显示（原因未知），必要时可以在此过滤掉
-                    val where = (MediaStore.Images.Media.MIME_TYPE + "='image/jpeg' "
-                            + "or "
-                            + MediaStore.Images.Media.MIME_TYPE + "='image/png'")
-                    when (id) {
-                        QUERY_ALL -> {
-//                            LogUtils.e(this, "--查询图片->所有--")
-                            cursorLoader = CursorLoader(
-                                    this@ImageSelectorActivity,
-                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                    IMAGE_PROJECTION,
-                                    where,
-                                    null, IMAGE_PROJECTION[3] + " DESC"
-                            )
-                        }
-                        QUERY_ONE -> {
-//                            LogUtils.e(this, "--查询图片->部分--")
-                            cursorLoader = CursorLoader(
-                                    this@ImageSelectorActivity,
-                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                    IMAGE_PROJECTION,
-                                    IMAGE_PROJECTION[1] + " like '%" + args!!.getString("path") + "%'",
-                                    null,
-                                    IMAGE_PROJECTION[3] + " DESC"
-                            )
-                        }
-                        else -> {
-//                            LogUtils.e(this, "--查询图片->所有--")
-                            cursorLoader = CursorLoader(
-                                    this@ImageSelectorActivity,
-                                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                    IMAGE_PROJECTION,
-                                    where,
-                                    null, IMAGE_PROJECTION[3] + " DESC"
-                            )
-                        }
                     }
-                    return cursorLoader
+                    QUERY_ONE -> {
+//                            LogUtils.e(this, "--查询图片->部分--")
+                        cursorLoader = CursorLoader(
+                            this@ImageSelectorActivity,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            IMAGE_PROJECTION,
+                            IMAGE_PROJECTION[1] + " like '%" + args!!.getString("path") + "%'",
+                            null,
+                            IMAGE_PROJECTION[3] + " DESC"
+                        )
+                    }
+                    else -> {
+//                            LogUtils.e(this, "--查询图片->所有--")
+                        cursorLoader = CursorLoader(
+                            this@ImageSelectorActivity,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            IMAGE_PROJECTION,
+                            where,
+                            null, IMAGE_PROJECTION[3] + " DESC"
+                        )
+                    }
                 }
+                return cursorLoader
+            }
 
-                override fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor?) {
+            override fun onLoadFinished(loader: Loader<Cursor>, cursor: Cursor?) {
 
-                    if (cursor == null) return
-                    if (cursor.count > 0) {
-                        mImageList.clear()
-                        mPhotoList.clear()
-                        cursor.moveToFirst()
-                        while (cursor.moveToNext()) {
-                            val path: String =
-                                    cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[1]))
-                            val name: String =
-                                    cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[2]))
-                            val dateTime: Long =
-                                    cursor.getLong(cursor.getColumnIndexOrThrow(IMAGE_PROJECTION[3]))
-                            //                    LogUtils.e(TAG, "时间：" + dateTime);
-                            val image = ImageVo(path, name, dateTime, ImageVo.TYPE_IMAGE)
-                            mImageList.add(image)
-                            // 获取文件夹名称
-                            val imageFile = File(path)
-                            if (imageFile.exists()) {
-                                val folderFile = imageFile.parentFile
-                                folderFile?.let {
-                                    val folder = PhotoVo()
-                                    folder.name = folderFile.name
-                                    folder.path = folderFile.absolutePath
-                                    folder.cover = image // 文件夹缩略图
-                                    if (!mPhotoList.contains(folder)) {
-                                        val imageList: MutableList<ImageVo> =
-                                                java.util.ArrayList()
-                                        imageList.add(image)
-                                        folder.images = imageList
-                                        mPhotoList.add(folder)
-                                    } else { // 更新
-                                        val f = mPhotoList[mPhotoList.indexOf(folder)]
-                                        f.images.add(image)
-                                    }
+                if (cursor == null) return
+                if (cursor.count > 0) {
+                    mImageList.clear()
+                    mPhotoList.clear()
+                    cursor.moveToFirst()
+                    while (cursor.moveToNext()) {
+                        val path: String =
+                            cursor.getString(cursor.getColumnIndex(IMAGE_PROJECTION[1]))
+                        var vv = cursor.getColumnIndex(IMAGE_PROJECTION[2]);
+                        var name: String? = ""
+                        vv?.let {
+                            name =
+                                cursor.getString(it)
+                        }
+                        val dateTime: Long =
+                            cursor.getLong(cursor.getColumnIndex(IMAGE_PROJECTION[3]))
+                        //                    LogUtils.e(TAG, "时间：" + dateTime);
+                        val image = ImageVo(path, name, dateTime, ImageVo.TYPE_IMAGE)
+                        mImageList.add(image)
+                        // 获取文件夹名称
+                        val imageFile = File(path)
+                        if (imageFile.exists()) {
+                            val folderFile = imageFile.parentFile
+                            folderFile?.let {
+                                val folder = PhotoVo()
+                                folder.name = folderFile.name
+                                folder.path = folderFile.absolutePath
+                                folder.cover = image // 文件夹缩略图
+                                if (!mPhotoList.contains(folder)) {
+                                    val imageList: MutableList<ImageVo> =
+                                        java.util.ArrayList()
+                                    imageList.add(image)
+                                    folder.images = imageList
+                                    mPhotoList.add(folder)
+                                } else { // 更新
+                                    val f = mPhotoList[mPhotoList.indexOf(folder)]
+                                    f.images.add(image)
                                 }
                             }
                         }
-                        // 构造虚拟的所有图片目录
-                        if (mImageList.isNotEmpty()) {
-                            val all = PhotoVo()
-                            all.cover = mImageList[0]
-                            all.name = "All Images"
-                            all.path = "/"
-                            all.images = mImageList
-                            mPhotoList.add(0, all)
+                    }
+                    // 构造虚拟的所有图片目录
+                    if (mImageList.isNotEmpty()) {
+                        val all = PhotoVo()
+                        all.cover = mImageList[0]
+                        all.name = "All Images"
+                        all.path = "/"
+                        all.images = mImageList
+                        mPhotoList.add(0, all)
+                    }
+                    // 刷新数据
+                    mPhotoAdapter?.let {
+                        if (it.checkedIndex < mPhotoList.size - 1) {
+                            mImageAdapter?.refreshImages(
+                                mPhotoList[it.checkedIndex].images,
+                                mImageAdapter!!.selectedImages
+                            )
+                        } else {
+                            mImageAdapter?.refreshImages(mImageList, mImageAdapter!!.selectedImages)
                         }
-                        // 刷新数据
-                        mPhotoAdapter?.let {
-                            if (it.checkedIndex < mPhotoList.size - 1) {
-                                mImageAdapter?.refreshImages(
-                                        mPhotoList[it.checkedIndex].images,
-                                        mImageAdapter!!.selectedImages
-                                )
-                            } else {
-                                mImageAdapter?.refreshImages(mImageList, mImageAdapter!!.selectedImages)
-                            }
-                            it.refreshPhotos(mPhotoList)
-                        }
+                        it.refreshPhotos(mPhotoList)
                     }
                 }
-
-                override fun onLoaderReset(loader: Loader<Cursor>) {
-
-                }
             }
+
+            override fun onLoaderReset(loader: Loader<Cursor>) {
+
+            }
+        }
 }

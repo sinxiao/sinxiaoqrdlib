@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ZBarDemo</string>
+    <string name="scan_qrd">扫描二维码</string>
+    <string name="tap_on_light">单击打开灯光</string>
+    <string name="tap_off_light">单击关闭灯光</string>
+    <string name="scan_nothing">没有扫描到任何数据</string>
+    <string name="pxr_sdk_permission">申请权限</string>
+    <string name="all_images">所有图片</string>
+</resources>

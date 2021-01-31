@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 
@@ -16,7 +17,7 @@ import pub.devrel.easypermissions.EasyPermissions
  * @Description:
  * @Version: 1.0
  */
-abstract class RequestPermissionsActivity : AppCompatActivity() {
+abstract class RequestPermissionsActivity : FragmentActivity() {
     companion object {
 
         const val DEFAULT_REQUEST_PERMISSION = 30000

@@ -18,7 +18,8 @@ import kotlinx.coroutines.cancel
  * Describe:
  */
 @Keep
-abstract class BaseActivity : RequestPermissionsActivity(), CoroutineScope by MainScope(), View.OnClickListener {
+abstract class BaseActivity : RequestPermissionsActivity(), CoroutineScope by MainScope(),
+    View.OnClickListener {
 
     lateinit var TAG: String
 
@@ -74,15 +75,15 @@ abstract class BaseActivity : RequestPermissionsActivity(), CoroutineScope by Ma
     private fun greenStatusBar() {
         //判断是否能修改状态栏文字颜色
         if (!StatusBarUtil.setStatusBarDarkTheme(
-                        this, false
-                )
+                this, false
+            )
         ) {
             //如果不支持设置深色风格 为了兼容总不能让状态栏白白的看不清, 于是设置一个状态栏颜色为半透明,
             //这样半透明+白=灰, 状态栏的文字能看得清
             StatusBarUtil.setStatusBarColor(this, 0x55000000)
         }
         StatusBarUtil.setStatusBarColor(
-                this, Color.parseColor("#009553")
+            this, Color.parseColor("#009553")
         )
     }
 
@@ -118,15 +119,15 @@ abstract class BaseActivity : RequestPermissionsActivity(), CoroutineScope by Ma
         cancel()
     }
 
-    override fun attachBaseContext(newBase: Context?) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            super.attachBaseContext(newBase);
-        } else {
-            //zh：中文
-//      super.attachBaseContext(SaladinApplication.getInstance().initLanguage(newBase));
-            super.attachBaseContext(baseContext);
-        }
-    }
+//    override fun attachBaseContext(newBase: Context?) {
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+//            super.attachBaseContext(newBase);
+//        } else {
+//            //zh：中文
+////      super.attachBaseContext(SaladinApplication.getInstance().initLanguage(newBase));
+//            super.attachBaseContext(baseContext);
+//        }
+//    }
 
     override fun onClick(v: View?) {
 

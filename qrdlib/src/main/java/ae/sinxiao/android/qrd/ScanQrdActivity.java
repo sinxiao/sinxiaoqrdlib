@@ -148,6 +148,8 @@ public class ScanQrdActivity extends AppCompatActivity implements QRCodeView.Del
             }
         });
 
+        getSupportActionBar().hide();
+
         // 透明状态栏
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(
